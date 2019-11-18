@@ -1,0 +1,36 @@
+{
+  "name": "data-center",
+  "productName": "data-center",
+  "version": "1.0.0",
+  "description": "See the various hash values of entered text",
+  "repository": "electron/simple-samples",
+  "main": "app.js",
+  "author": "xsd",
+  "build": {
+    "appId": "data-center",
+    "win": {
+      "target": "msi",
+      "icon": "./icon-256x256.png",
+      "publisherName": "xsd"
+    },
+    "mac": {
+      "target": "default",
+      "icon": "./icon-256x256.png"
+    }
+  },
+  "scripts": {
+    "start": "electron app.js",
+    "build": "electron-packager . 'data-center' --platform=win32 --arch=x64 --icon=icon.ico --out=./out --asar --app-version=0.0.1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^3.0.2",
+    "electron-packager": "^14.1.0",
+    "electron-builder": "^22.1.0"
+  },
+  "dependencies": {
+    "electron-reload": "^1.5.0"
+  }
+}
