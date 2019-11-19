@@ -1,10 +1,82 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 const url = require("url");
+const fs = require("fs");
 
 let window = null;
 
-require('electron-reload')(__dirname);
+// require("electron-reload")(__dirname);
+var https = require("https");
+
+var getHttpsData = function(filepath, success, error) {
+  // 回调缺省时候的处理
+  success = success || function() {};
+  error = error || function() {};
+
+  var url =
+    "https://raw.githubusercontent.com/xuesongde/simple-electron/master/hot-update/" +
+    filepath +
+    "?r=" +
+    Math.random();
+
+  https.get(url, function(res) {
+    var statusCode = res.statusCode;
+
+    if (statusCode !== 200) {
+      // 出错回调
+      error();
+      // 消耗响应数据以释放内存
+      res.resume();
+      return;
+    }
+
+    res.setEncoding("utf8");
+    var rawData = "";
+    res.on("data", function(chunk) {
+      rawData += chunk;
+    });
+
+    // 请求结束
+    res
+      .on("end", function() {
+        // 成功回调
+        success(rawData);
+      })
+      .on("error", function(e) {
+        // 出错回调
+        error();
+      });
+  });
+};
+function getLocalVersion() {
+  let version;
+  fs.readFile("./package.json", function read(err, data) {
+    if (err) {
+      throw err;
+    }
+    version = JSON.parse(data).version;
+    debugger;
+  });
+  return version;
+}
+function success(data) {
+  const dataObj = JSON.parse(data);
+  fs.readFile("./package.json", function read(err, data) {
+    if (err) {
+      throw err;
+    }
+    const localVersion = JSON.parse(data).version;
+    if (localVersion !== dataObj.version) {
+      // your app need to update
+    }
+    debugger;
+  });
+  debugger;
+  console.log(dataObj);
+}
+function error() {
+  console.error("something going wrong...");
+}
 // Wait until the app is ready
 app.once("ready", () => {
   // Create a new window
@@ -20,7 +92,7 @@ app.once("ready", () => {
     // Don't show the window until it's ready, this prevents any white flickering
     show: false
   });
-
+  getHttpsData("package.json", success, error);
   // Load a URL in the window to the local index.html path
   window.loadURL(
     url.format({
