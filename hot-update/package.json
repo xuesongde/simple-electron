@@ -1,7 +1,7 @@
 {
   "name": "data-center",
   "productName": "data-center",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "See the various hash values of entered text",
   "repository": "electron/simple-samples",
   "main": "app.js",
