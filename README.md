@@ -1,4 +1,4 @@
-# simple-electron
+# simple-electron-app
 
 simple electron application
 
