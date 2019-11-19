@@ -5,8 +5,10 @@ const fs = require("fs");
 
 let window = null;
 
-// require("electron-reload")(__dirname);
 var https = require("https");
+var http = require("http");
+var request = require("request");
+var AdmZip = require("adm-zip");
 
 var getHttpsData = function(filepath, success, error) {
   // 回调缺省时候的处理
@@ -48,17 +50,21 @@ var getHttpsData = function(filepath, success, error) {
       });
   });
 };
-function getLocalVersion() {
-  let version;
-  fs.readFile("./package.json", function read(err, data) {
-    if (err) {
-      throw err;
-    }
-    version = JSON.parse(data).version;
-    debugger;
-  });
-  return version;
-}
+const downLoad = () => {
+  //循环多线程下载
+  for (let i = 0; i < 1; i++) {
+    let fileName = "source.zip";
+    let url = "http://localhost:3030/" + fileName;
+    let stream = fs.createWriteStream("./source.zip");
+    request(url)
+      .pipe(stream)
+      .on("close", function(err) {
+        const unzip = new AdmZip("./source.zip");
+        unzip.extractAllTo("./", /*overwrite*/ true);
+        console.log("更新完毕");
+      });
+  }
+};
 function success(data) {
   const dataObj = JSON.parse(data);
   fs.readFile("./package.json", function read(err, data) {
@@ -66,16 +72,15 @@ function success(data) {
       throw err;
     }
     const localVersion = JSON.parse(data).version;
+    debugger;
     if (localVersion !== dataObj.version) {
       // your app need to update
+      downLoad();
     }
-    debugger;
   });
-  debugger;
-  console.log(dataObj);
 }
 function error() {
-  console.error("something going wrong...");
+  console.error("something going wrong when download");
 }
 // Wait until the app is ready
 app.once("ready", () => {
